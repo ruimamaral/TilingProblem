@@ -34,44 +34,32 @@ public class Problem {
 	}
 
 	public int solve() {
-		int res;
 		if (mem.containsKey(this)) {
 			return mem.get(this);
 		}
 		Collection<Problem> sub = new ArrayList<Problem>();
 
+		int res;
 		int n = this.key.size();
-
-		List<Integer> temp1 = new ArrayList<Integer>(key);
-		boolean canRemove = false;
-		for (int l = 0; l < n - 1; l++) { // last line doesnt matter
-			int currentCol = this.key.get(l);
-			if (l == 0 || this.key.get(l - 1) < currentCol) {
-				if (currentCol == 0) {
-					continue;
-				}
-				for (int sqSz = 2; sqSz <= currentCol; sqSz++) {
-					if (l + sqSz <= n) {
-						Problem subProblem = new Problem(temp1);
-						subProblem.removeSquare(l, sqSz);
-						sub.add(subProblem);
-						canRemove = true;
-					}
-				}
-				temp1.set(l, currentCol - 1);
-			}
-		}
-		sub.add(new Problem(temp1));
-
-		if (canRemove == false) {
-			mem.put(this, 1);
+		int maxColIndex = this.getMaxColIndex();
+		int maxCol = this.key.get(maxColIndex);
+		if (maxCol == 0) {
 			return 1;
 		}
+		int maxSqSz = 1;
 
-		System.out.println("Solving:");
-		System.out.println(this.key);
-		System.out.println("");
-		sub.stream().forEach(p -> System.out.println(p.getKey()));
+		for (int i = maxColIndex + 1; i < n && maxSqSz < maxCol; i++) {
+			if (this.key.get(i) != maxCol) {
+				break;
+			}
+			maxSqSz++;
+		}
+		for (int i = maxSqSz; i > 0; i--) {
+			Problem subProblem = new Problem(this.key);
+			subProblem.removeSquare(maxColIndex, i);
+			sub.add(subProblem);
+		}
+
 		res = sub.stream()
 				.map(p -> p.solve(this.mem)).reduce(Integer::sum).get();
 
@@ -82,17 +70,24 @@ public class Problem {
 	private void removeSquare(int l, int sqSz) {
 		int col = this.key.get(l);
 		int newCol = col - sqSz;
-		int i = l + sqSz - 1;
-		// System.out.println(String.format("l: %d, sqSz: %d, col: %d, newCol: %d, i: %d", l, sqSz, col, newCol, i));
-		while (i > l) {
-			this.key.set(i, this.key.get(i) - sqSz);
-			i--;
+		for (int i = 0; i < sqSz; i++) {
+			this.key.set(l + i, newCol);
 		}
+	}
 
-		while (i >= 0 && this.key.get(i) > newCol) {
-			this.key.set(i, newCol);
-			i--;
+	private int getMaxColIndex() {
+		int sz = this.key.size();
+		int max = 0;
+		int maxCol = 0;
+		for (int i = 0; i < sz; i++){
+			int curCol = this.key.get(i);
+			if (curCol > maxCol) {
+				max = i;
+				maxCol = curCol;
+			}
 		}
+		return max;
+		
 	}
 
 	public int solve(Map<Problem, Integer> mem) {

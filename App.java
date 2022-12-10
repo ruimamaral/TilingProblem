@@ -1,19 +1,24 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class App {
 
 	public static void main(String args[]) {
 
-		Scanner scan = new Scanner(System.in);
-		int key = 0;
+		try (Scanner scan = new Scanner(System.in)) {
+			List<Integer> key = new ArrayList<Integer>();
 
-		int n = scan.nextInt();
-		int m = scan.nextInt();
-		System.out.println(String.format("n: %d, m: %d", n, m));
+			int n = scan.nextInt();
+			int m = scan.nextInt();
 
-		for (int i = 1; i <= n; i++) {
-			key += scan.nextInt()*Math.pow(10, n - i);
+			for (int i = 1; i <= n; i++) {
+				key.add(scan.nextInt());
+			}
+			
+			System.out.println(key);
+			Problem problem = new Problem(key);
+			System.out.println(problem.solve());
 		}
-		System.out.println(Problem.solve(key));
 	}
 }

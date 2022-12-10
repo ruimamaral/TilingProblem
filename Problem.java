@@ -68,6 +68,10 @@ public class Problem {
 			return 1;
 		}
 
+		System.out.println("Solving:");
+		System.out.println(this.key);
+		System.out.println("");
+		sub.stream().forEach(p -> System.out.println(p.getKey()));
 		res = sub.stream()
 				.map(p -> p.solve(this.mem)).reduce(Integer::sum).get();
 
@@ -80,6 +84,10 @@ public class Problem {
 		int newCol = col - sqSz;
 		int i = l + sqSz - 1;
 		// System.out.println(String.format("l: %d, sqSz: %d, col: %d, newCol: %d, i: %d", l, sqSz, col, newCol, i));
+		while (i > l) {
+			this.key.set(i, this.key.get(i) - sqSz);
+			i--;
+		}
 
 		while (i >= 0 && this.key.get(i) > newCol) {
 			this.key.set(i, newCol);

@@ -19,6 +19,10 @@ public class Problem {
 		return Collections.unmodifiableList(this.key);
 	}
 
+	public Map<Problem, Integer> getMem() {
+		return this.mem;
+	}
+
 	@Override
 	public int hashCode() {
 		return this.key.stream().map(n -> n * 6967).reduce(Integer::sum).get();
@@ -30,26 +34,29 @@ public class Problem {
 	}
 
 	public int solve() {
-		int res = mem.get(this);
-		if (res != 0) {
-			return res;
+		int res;
+		if (mem.containsKey(this)) {
+			return mem.get(this);
 		}
 		Collection<Problem> sub = new ArrayList<Problem>();
-		Collection<Integer> corners = new ArrayList<Integer>();
 
 		int n = this.key.size();
 
-		corners.add(0); // first line is always going to have a corner
 		List<Integer> temp1 = new ArrayList<Integer>(key);
 		boolean canRemove = false;
 		for (int l = 0; l < n - 1; l++) { // last line doesnt matter
 			int currentCol = this.key.get(l);
 			if (l == 0 || this.key.get(l - 1) < currentCol) {
+				if (currentCol == 0) {
+					continue;
+				}
 				for (int sqSz = 2; sqSz <= currentCol; sqSz++) {
-					Problem subProblem = new Problem(temp1);
-					subProblem.removeSquare(l, sqSz);
-					sub.add(subProblem);
-					canRemove = true;
+					if (l + sqSz <= n) {
+						Problem subProblem = new Problem(temp1);
+						subProblem.removeSquare(l, sqSz);
+						sub.add(subProblem);
+						canRemove = true;
+					}
 				}
 				temp1.set(l, currentCol - 1);
 			}
@@ -57,7 +64,8 @@ public class Problem {
 		sub.add(new Problem(temp1));
 
 		if (canRemove == false) {
-			res = 1;
+			mem.put(this, 1);
+			return 1;
 		}
 
 		res = sub.stream()
@@ -71,8 +79,9 @@ public class Problem {
 		int col = this.key.get(l);
 		int newCol = col - sqSz;
 		int i = l + sqSz - 1;
+		// System.out.println(String.format("l: %d, sqSz: %d, col: %d, newCol: %d, i: %d", l, sqSz, col, newCol, i));
 
-		while (i >= 0) {
+		while (i >= 0 && this.key.get(i) > newCol) {
 			this.key.set(i, newCol);
 			i--;
 		}

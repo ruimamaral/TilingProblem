@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class App {
@@ -19,6 +20,12 @@ public class App {
 			System.out.println(key);
 			Problem problem = new Problem(key);
 			System.out.println(problem.solve());
+			Map<Problem, Integer> mem = problem.getMem();
+			for (var entry : mem.entrySet()) {
+				System.out.println(entry.getKey().getKey());
+				System.out.println(entry.getValue());
+				System.out.println("");
+			}
 		}
 	}
 }

@@ -8,18 +8,18 @@ import java.util.Map;
 public class Problem {
 	private List<Integer> key;
 
-	private Map<Problem, Integer> mem;
+	private Map<Problem, Long> mem;
 
 	public Problem(List<Integer> key) {
 		this.key = new ArrayList<Integer>(key);
-		mem = new HashMap<Problem, Integer>();
+		mem = new HashMap<Problem, Long>();
 	}
 
 	public List<Integer> getKey() {
 		return Collections.unmodifiableList(this.key);
 	}
 
-	public Map<Problem, Integer> getMem() {
+	public Map<Problem, Long> getMem() {
 		return this.mem;
 	}
 
@@ -33,13 +33,13 @@ public class Problem {
 		return o instanceof Problem && ((Problem) o).getKey().equals(this.key);
 	}
 
-	public int solve() {
+	public long solve() {
 		if (mem.containsKey(this)) {
 			return mem.get(this);
 		}
 		Collection<Problem> sub = new ArrayList<Problem>();
 
-		int res;
+		long res;
 		int n = this.key.size();
 		int maxColIndex = this.getMaxColIndex();
 		int maxCol = this.key.get(maxColIndex);
@@ -61,7 +61,7 @@ public class Problem {
 		}
 
 		res = sub.stream()
-				.map(p -> p.solve(this.mem)).reduce(Integer::sum).get();
+				.map(p -> p.solve(this.mem)).reduce(Long::sum).get();
 
 		this.mem.put(this, res);
 		return res;
@@ -90,7 +90,7 @@ public class Problem {
 		
 	}
 
-	public int solve(Map<Problem, Integer> mem) {
+	public long solve(Map<Problem, Long> mem) {
 		this.mem = mem;
 		return this.solve();
 	}

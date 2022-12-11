@@ -42,19 +42,20 @@ unsigned long long int solve(vector<int> *problem,
 		unordered_map<int, unsigned long long> &mem) {
 
 	int problem_hash = hash_vec(problem);
-
-	try {
-		return mem.at(problem_hash);
-	} catch (out_of_range &e) {
-		// do nothing
-	}
-
 	unsigned long long res = 1;
 
 	int max_col_line = get_max_col_index(problem);
 	int max_sqsz = get_max_sqsz(problem, max_col_line);
 	vector<int> *sub_problem;
 	vector<vector<int>*> sub_problems;
+	cout << problem_hash << "\n";
+
+	/**try {
+		res = mem.at(problem_hash);
+	} catch (out_of_range &e) {
+		cout << "br";
+		// do nothing
+	} **/
 
 	for (int i = 1; i <= max_sqsz; i++) {
 		(*sub_problem) = (*problem);
@@ -96,6 +97,8 @@ int main() {
 		cout << i;
 		cout << "\n";
 	}
+	mem[34] = 344;
+	cout << mem.at(34) << "\n";
 
 	cout << solve(&problem, mem);
 	return 0;

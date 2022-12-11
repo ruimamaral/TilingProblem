@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+
 public class App {
 
 	public static void main(String args[]) {
@@ -30,18 +31,14 @@ public class App {
 				return;
 			}
 			
-			//System.out.println(key);
 			Problem problem = new Problem(key);
-			//final long startTime = System.currentTimeMillis();
 			System.out.println(problem.solve());
-			//final long endTime = System.currentTimeMillis();
-			//System.out.println("Execution time: " + (endTime - startTime));
-			/** Map<Problem, Integer> mem = problem.getMem();
+			Map<Problem, Long> mem = problem.getMem();
 			for (var entry : mem.entrySet()) {
 				System.out.println(entry.getKey().getKey());
 				System.out.println(entry.getValue());
-				System.out.println("")
-			} **/
+				System.out.println("");
+			}
 		}
 	}
 
@@ -74,29 +71,29 @@ public class App {
 		}
 
 		public long solve() {
+			System.out.println(this.key);
 			if (mem.containsKey(this)) {
 				return mem.get(this);
 			}
 			Collection<Problem> sub = new ArrayList<Problem>();
 
 			long res;
-			int n = this.key.size();
-			int maxColIndex = this.getMaxColIndex();
-			int maxCol = this.key.get(maxColIndex);
-			if (maxCol == 0) {
-				return 1;
-			}
-			int maxSqSz = 1;
+			int sz = this.key.size();
+			int start;
 
-			for (int i = maxColIndex + 1; i < n && maxSqSz < maxCol; i++) {
-				if (this.key.get(i) != maxCol) {
-					break;
-				}
-				maxSqSz++;
+			for (start = 0; this.key.get(start) == 0 && start < sz - 1; start++) {}
+			if (start >= sz - 1) {
+				this.mem.put(this, 1L);
+				return 1L;
 			}
-			for (int i = maxSqSz; i > 0; i--) {
+
+			int n = sz - start;
+
+			int maxSqSz = Math.min(n, this.key.get(start));
+
+			for (int i = 1; i <= maxSqSz; i++) {
 				Problem subProblem = new Problem(this.key);
-				subProblem.removeSquare(maxColIndex, i);
+				subProblem.removeSquare(start, i);
 				sub.add(subProblem);
 			}
 
@@ -108,26 +105,10 @@ public class App {
 		}
 
 		private void removeSquare(int l, int sqSz) {
-			int col = this.key.get(l);
-			int newCol = col - sqSz;
-			for (int i = 0; i < sqSz; i++) {
-				this.key.set(l + i, newCol);
+			int maxLine = l + sqSz - 1;
+			for (int i = l ; i <= maxLine; i++) {
+				this.key.set(i, this.key.get(i) - sqSz);
 			}
-		}
-
-		private int getMaxColIndex() {
-			int sz = this.key.size();
-			int max = 0;
-			int maxCol = 0;
-			for (int i = 0; i < sz; i++){
-				int curCol = this.key.get(i);
-				if (curCol > maxCol) {
-					max = i;
-					maxCol = curCol;
-				}
-			}
-			return max;
-			
 		}
 
 		public long solve(Map<Problem, Long> mem) {

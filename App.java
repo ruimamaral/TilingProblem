@@ -30,9 +30,12 @@ public class App {
 				return;
 			}
 			
-			System.out.println(key);
+			//System.out.println(key);
 			Problem problem = new Problem(key);
+			//final long startTime = System.currentTimeMillis();
 			System.out.println(problem.solve());
+			//final long endTime = System.currentTimeMillis();
+			//System.out.println("Execution time: " + (endTime - startTime));
 			/** Map<Problem, Integer> mem = problem.getMem();
 			for (var entry : mem.entrySet()) {
 				System.out.println(entry.getKey().getKey());

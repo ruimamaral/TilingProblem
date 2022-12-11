@@ -41,14 +41,13 @@ int get_max_sqsz(const vector<int> *problem, int line) {
 unsigned long long int solve(vector<int> *problem,
 		unordered_map<int, unsigned long long> &mem) {
 
-	int problem_hash = hash_vec(problem);
+	// int problem_hash = hash_vec(problem);
 	unsigned long long res = 1;
 
 	int max_col_line = get_max_col_index(problem);
 	int max_sqsz = get_max_sqsz(problem, max_col_line);
-	vector<int> *sub_problem;
+	vector<int> *sub_problem = new vector<int>; //maybe not needed
 	vector<vector<int>*> sub_problems;
-	cout << problem_hash << "\n";
 
 	/**try {
 		res = mem.at(problem_hash);
@@ -65,13 +64,13 @@ unsigned long long int solve(vector<int> *problem,
 	for (auto sp : sub_problems) {
 		res += solve(sp, mem);
 	}
-	mem[problem_hash] = res;
+	/*mem[problem_hash] = res; */
 
 	return res;
 }
 
 int main() {
-	vector<int> problem;
+	vector<int> *problem = new vector<int>;
 	int n, m, input;
 	bool is_nonzero = false;
 	unordered_map<int, unsigned long long> mem;
@@ -81,7 +80,7 @@ int main() {
 
 	for (int i = 0; i < n; i++) {
 		cin >> input;
-		problem.push_back(input);
+		(*problem).push_back(input);
 		if (input != 0) {
 			is_nonzero = true;
 		}
@@ -93,14 +92,12 @@ int main() {
 
 	printf("%d, %d\n", n, m);
 
-	for (auto &i : problem) {
+	for (auto &i : (*problem)) {
 		cout << i;
 		cout << "\n";
 	}
-	mem[34] = 344;
-	cout << mem.at(34) << "\n";
 
-	cout << solve(&problem, mem);
+	cout << solve(problem, mem);
 	return 0;
 }
 

@@ -78,6 +78,7 @@ unsigned long long int solve(vector<int> *problem,
 	}
 	for (auto &sp : sub_problems) {
 		res += solve(sp, mem);
+		free(sp);
 	}
 	mem[*problem] = res;
 

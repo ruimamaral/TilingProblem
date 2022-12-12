@@ -102,7 +102,7 @@ int main() {
 		}
 	}
 	if (!is_nonzero) {
-		cout << 0;
+		cout << 0 << "\n";
 		return 0;
 	}
 

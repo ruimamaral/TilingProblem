@@ -5,6 +5,16 @@
 
 using namespace std;
 
+struct vector_hasher {
+int operator()(const vector<int> vec) const {
+		int hash = vec[0] + 11;
+		for(auto &i : vec) {
+			hash ^= i + 0x9e3779b9 + (hash << 7);
+		}
+		return hash;
+	}
+};
+
 int hash_vec(vector<int> *vec) {
 	int hash = vec->size();
 	for(auto &i : *vec) {
@@ -39,28 +49,26 @@ int get_max_sqsz(const vector<int> *problem, int line) {
 }
 
 unsigned long long int solve(vector<int> *problem,
-		unordered_map<int, unsigned long long> &mem) {
+		unordered_map<vector<int>, unsigned long long, vector_hasher> &mem) {
 
-	// int problem_hash = hash_vec(problem);
 	unsigned long long res = 0;
+
+	try {
+		return mem.at(*problem);
+	} catch (out_of_range &e) {
+		//	do nothing
+	}
 
 	int max_col_line = get_max_col_index(problem);
 
 	if ((*problem)[max_col_line] <= 1) {
-		// mem[] = 1;
+		mem[*problem] = 1;
 		return 1;
 	}
 
 	int max_sqsz = get_max_sqsz(problem, max_col_line);
-	vector<int> *sub_problem = new vector<int>; //maybe not needed bcs = prob initializes it
+	vector<int> *sub_problem;
 	vector<vector<int>*> sub_problems;
-
-	/**try {
-		res = mem.at(problem_hash);
-	} catch (out_of_range &e) {
-		cout << "br";
-		// do nothing
-	} **/
 
 	for (int i = 1; i <= max_sqsz; i++) {
 		sub_problem = new vector<int>;
@@ -71,7 +79,7 @@ unsigned long long int solve(vector<int> *problem,
 	for (auto &sp : sub_problems) {
 		res += solve(sp, mem);
 	}
-	/*mem[problem_hash] = res; */
+	mem[*problem] = res;
 
 	return res;
 }
@@ -80,7 +88,7 @@ int main() {
 	vector<int> *problem = new vector<int>;
 	int n, m, input;
 	bool is_nonzero = false;
-	unordered_map<int, unsigned long long> mem;
+	unordered_map<vector<int>, unsigned long long, vector_hasher> mem;
 	
 	cin >> n;
 	cin >> m;

@@ -15,14 +15,6 @@ int operator()(const vector<int> vec) const {
 	}
 };
 
-int hash_vec(vector<int> *vec) {
-	int hash = vec->size();
-	for(auto &i : *vec) {
-		hash += i * 6967;
-	}
-	return hash;
-}
-
 int get_max_col_index(const vector<int> *problem) {
 	int max_val = 0, max_ix = 0, sz = problem->size(), current = 0;
 	for (int i = 0; i < sz; i++) {

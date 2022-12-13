@@ -6,10 +6,21 @@
 
 using namespace std;
 
-int get_max_col_index(const vector<int> *problem) {
-	int max_val = 0, max_ix = 0, sz = problem->size(), current = 0;
-	for (int i = 0; i < sz; i++) {
-		current = (*problem)[i];
+struct vec_hasher {
+    int operator()(const vector<int> &vec) const {
+
+		int hash = vec[0];
+		for(auto &i : vec) {
+			hash ^= i + 0x9e3779b9 + (hash >> 2) + (hash << i);
+		}
+		return hash;
+	}
+};
+
+int get_max_col_index(const vector<int> &problem) {
+	int max_val = 0, max_ix = 0, sz = problem.size(), current = 0;
+	for (int i = sz - 1; i >= 0; i--) {
+		current = problem[i];
 		if (current > max_val) {
 			max_val = current;
 			max_ix = i;
@@ -18,70 +29,59 @@ int get_max_col_index(const vector<int> *problem) {
 	return max_ix;
 }
 
-unsigned long long vec_hasher(vector<int> *vec) {
-	unsigned long long hash = (*vec).size();
-	for(auto &i : (*vec)) {
-		hash ^= i + 0x9e3779b9 + (hash >> 2) + (hash << i);
-	}
-	return hash;
-}
-
-void remove_sq(vector<int> *problem, int l, int sqsz) {
-	int new_col = (*problem)[l] - sqsz;
+void remove_sq(vector<int> &problem, int l, int sqsz) {
+	int new_col = problem[l] - sqsz;
 	for (int i = 0; i < sqsz; i++) {
-		(*problem)[l + i] = new_col;
+		problem[l - i] = new_col;
 	}
 }
-unsigned long long int solve(vector<int> *problem,
-		unordered_map<unsigned long long, unsigned long long> &mem) {
+unsigned long long int solve(
+		vector<int> &problem, unordered_map<vector<int>,
+		unsigned long long, vec_hasher> &mem) {
 
 	unsigned long long res = 0;
 
 	try {
-		return mem.at(vec_hasher(problem));
+		return mem.at(problem);
 	} catch (out_of_range &e) {
 		//	do nothing
 	}
 
 	int max_col_line = get_max_col_index(problem);
-	int max_col = (*problem)[max_col_line];
+	int max_col = problem[max_col_line];
 
 	if (max_col <= 1) {
 		return 1;
 	}
 
-	vector<int> *sub_problem;
-	vector<vector<int>*> sub_problems;
+	vector<int> sub_problem;
 	int sqsz = 1;
 
 	for (int i = max_col_line;
-			(*problem)[i] == max_col && sqsz <= max_col; i++, sqsz++) {
+			problem[i] == max_col && sqsz <= max_col; i--, sqsz++) {
 
-		sub_problem = new vector<int>;
-		(*sub_problem) = (*problem);
+		sub_problem = problem;
 		remove_sq(sub_problem, max_col_line, sqsz);
-		sub_problems.push_back(sub_problem);
 		res += solve(sub_problem, mem);
-		free(sub_problem);
 	}
 
-	mem[vec_hasher(problem)] = res;
+	mem[problem] = res;
 
 	return res;
 }
 
 int main() {
-	vector<int> *problem = new vector<int>;
+	vector<int> problem;
 	int n, m, input;
 	bool is_nonzero = false;
-	unordered_map<unsigned long long, unsigned long long> mem(5000000);
+	unordered_map<vector<int>, unsigned long long, vec_hasher> mem(6291469);
 	
 	cin >> n;
 	cin >> m;
 
 	for (int i = 0; i < n; i++) {
 		cin >> input;
-		(*problem).push_back(input);
+		problem.push_back(input);
 		if (input != 0) {
 			is_nonzero = true;
 		}

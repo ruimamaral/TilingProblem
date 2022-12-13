@@ -2,18 +2,9 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <cmath>
 
 using namespace std;
-
-struct vector_hasher {
-int operator()(const vector<int> vec) const {
-		int hash = vec[0] + 11;
-		for(auto &i : vec) {
-			hash ^= i + 0x9e3779b9 + (hash << 7);
-		}
-		return hash;
-	}
-};
 
 int get_max_col_index(const vector<int> *problem) {
 	int max_val = 0, max_ix = 0, sz = problem->size(), current = 0;
@@ -27,6 +18,14 @@ int get_max_col_index(const vector<int> *problem) {
 	return max_ix;
 }
 
+unsigned long long vec_hasher(vector<int> *vec) {
+	unsigned long long hash = (*vec).size();
+	for(auto &i : (*vec)) {
+		hash ^= i + 0x9e3779b9 + (hash >> 2) + (hash << i);
+	}
+	return hash;
+}
+
 void remove_sq(vector<int> *problem, int l, int sqsz) {
 	int new_col = (*problem)[l] - sqsz;
 	for (int i = 0; i < sqsz; i++) {
@@ -34,12 +33,12 @@ void remove_sq(vector<int> *problem, int l, int sqsz) {
 	}
 }
 unsigned long long int solve(vector<int> *problem,
-		unordered_map<vector<int>, unsigned long long, vector_hasher> &mem) {
+		unordered_map<unsigned long long, unsigned long long> &mem) {
 
 	unsigned long long res = 0;
 
 	try {
-		return mem.at(*problem);
+		return mem.at(vec_hasher(problem));
 	} catch (out_of_range &e) {
 		//	do nothing
 	}
@@ -66,7 +65,7 @@ unsigned long long int solve(vector<int> *problem,
 		free(sub_problem);
 	}
 
-	mem[*problem] = res;
+	mem[vec_hasher(problem)] = res;
 
 	return res;
 }
@@ -75,7 +74,7 @@ int main() {
 	vector<int> *problem = new vector<int>;
 	int n, m, input;
 	bool is_nonzero = false;
-	unordered_map<vector<int>, unsigned long long, vector_hasher> mem;
+	unordered_map<unsigned long long, unsigned long long> mem(10000000);
 	
 	cin >> n;
 	cin >> m;

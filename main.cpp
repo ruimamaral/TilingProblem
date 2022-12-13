@@ -74,7 +74,7 @@ int main() {
 	vector<int> *problem = new vector<int>;
 	int n, m, input;
 	bool is_nonzero = false;
-	unordered_map<unsigned long long, unsigned long long> mem(10000000);
+	unordered_map<unsigned long long, unsigned long long> mem(5000000);
 	
 	cin >> n;
 	cin >> m;

@@ -33,13 +33,6 @@ void remove_sq(vector<int> *problem, int l, int sqsz) {
 		(*problem)[l + i] = new_col;
 	}
 }
-
-int get_max_sqsz(const vector<int> *problem, int line) {
-	int sqsz = 1, col = (*problem)[line];
-	for (int i = line + 1; (*problem)[i] == col && sqsz < col; i++, sqsz++) {}
-	return sqsz;
-}
-
 unsigned long long int solve(vector<int> *problem,
 		unordered_map<vector<int>, unsigned long long, vector_hasher> &mem) {
 
@@ -52,26 +45,27 @@ unsigned long long int solve(vector<int> *problem,
 	}
 
 	int max_col_line = get_max_col_index(problem);
+	int max_col = (*problem)[max_col_line];
 
-	if ((*problem)[max_col_line] <= 1) {
-		mem[*problem] = 1;
+	if (max_col <= 1) {
 		return 1;
 	}
 
-	int max_sqsz = get_max_sqsz(problem, max_col_line);
 	vector<int> *sub_problem;
 	vector<vector<int>*> sub_problems;
+	int sqsz = 1;
 
-	for (int i = 1; i <= max_sqsz; i++) {
+	for (int i = max_col_line;
+			(*problem)[i] == max_col && sqsz <= max_col; i++, sqsz++) {
+
 		sub_problem = new vector<int>;
 		(*sub_problem) = (*problem);
-		remove_sq(sub_problem, max_col_line, i);
+		remove_sq(sub_problem, max_col_line, sqsz);
 		sub_problems.push_back(sub_problem);
+		res += solve(sub_problem, mem);
+		free(sub_problem);
 	}
-	for (auto &sp : sub_problems) {
-		res += solve(sp, mem);
-		free(sp);
-	}
+
 	mem[*problem] = res;
 
 	return res;
@@ -101,4 +95,3 @@ int main() {
 	cout << solve(problem, mem) << "\n";
 	return 0;
 }
-

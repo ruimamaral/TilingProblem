@@ -7,7 +7,7 @@
 using namespace std;
 
 struct vec_hasher {
-    int operator()(const vector<int> &vec) const {
+	int operator()(const vector<int> &vec) const {
 
 		int hash = vec[0];
 		for(auto &i : vec) {
